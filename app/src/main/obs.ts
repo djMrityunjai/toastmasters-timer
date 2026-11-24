@@ -150,7 +150,8 @@ export class ObsController extends EventEmitter<ObsEvents> {
       await this.obs.call(on ? 'StartVirtualCam' : 'StopVirtualCam')
     } catch (err) {
       throw new Error(
-        `${describeError(err)}${on ? ' — on macOS, start the virtual camera once from OBS itself and allow the system extension if prompted.' : ''}`
+        `${describeError(err)}${on ? ' — on macOS, start the virtual camera once from OBS itself and allow the system extension if prompted.' : ''}`,
+        { cause: err }
       )
     }
   }
@@ -264,7 +265,7 @@ export class ObsController extends EventEmitter<ObsEvents> {
     const files: Record<string, string> = {}
     for (const p of PHASES) {
       const { inputSettings } = await this.obs.call('GetInputSettings', { inputName: BG_INPUT[p] })
-      files[p] = String(inputSettings.file ?? '')
+      files[p] = typeof inputSettings.file === 'string' ? inputSettings.file : ''
     }
     const cam = sceneItems.find((i) => CAMERA_KINDS.includes(i.inputKind as string))
     const cameraFilters = cam

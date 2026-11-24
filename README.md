@@ -80,12 +80,20 @@ npm install
 | `npm run dev` | Run with hot reload. Main-process changes need a restart. |
 | `npm test` | Unit tests for the timer engine (vitest). |
 | `npm run typecheck` | TypeScript check. |
+| `npm run lint` | Lint with [oxlint](https://oxc.rs) (type-aware). Must pass with zero warnings. |
+| `npm run lint:fix` | Apply automatic lint fixes. |
 | `npm run build` | Compile into `app/out/`. |
 | `npm start` | Run the compiled app. |
 | `npm run install:mac` | Build for this Mac, quit the running app, replace `/Applications/Toastmasters Timer.app`, relaunch. |
 | `npm run dist:mac` | Unsigned DMGs for Apple Silicon and Intel in `app/dist/`. |
 | `npm run dist:win` | Windows installer `app/dist/Toastmasters-Timer-Setup-<version>.exe`. Builds on a Mac too. |
 | `npm version patch --no-git-tag-version` | Bump the version (use `minor`/`major` as needed) before installing or packaging. |
+
+Before committing, run all three checks:
+
+```bash
+npm run lint && npm run typecheck && npm test
+```
 
 Typical update on your own Mac:
 

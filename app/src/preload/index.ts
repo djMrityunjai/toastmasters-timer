@@ -6,8 +6,10 @@ const invoke =
   (...args: unknown[]) =>
     ipcRenderer.invoke(`api:${name}`, ...args)
 
-function subscribe<T extends unknown[]>(channel: string, cb: (...args: T) => void): () => void {
-  const listener = (_e: Electron.IpcRendererEvent, ...args: unknown[]) => cb(...(args as T))
+// Event payloads are typed by TimerApi's on* signatures; main is the only sender.
+// oxlint-disable-next-line typescript/no-explicit-any
+function subscribe(channel: string, cb: (...args: any[]) => void): () => void {
+  const listener = (_e: Electron.IpcRendererEvent, ...args: unknown[]) => cb(...args)
   ipcRenderer.on(channel, listener)
   return () => ipcRenderer.removeListener(channel, listener)
 }
@@ -48,6 +50,6 @@ const api: TimerApi = {
   onObs: (cb) => subscribe('obs', cb),
   onHistory: (cb) => subscribe('history', cb),
   onSets: (cb) => subscribe('sets', cb)
-} as TimerApi
+}
 
 contextBridge.exposeInMainWorld('api', api)

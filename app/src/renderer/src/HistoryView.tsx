@@ -15,6 +15,12 @@ export default function HistoryView({ snap }: { snap: AppSnapshot }) {
   const [copied, setCopied] = useState(false)
   const entries = snap.history
 
+  const copyReport = async () => {
+    await api.copyText(reportText(entries))
+    setCopied(true)
+    setTimeout(() => setCopied(false), 1500)
+  }
+
   return (
     <section>
       <h2>Timer's report</h2>
@@ -51,11 +57,7 @@ export default function HistoryView({ snap }: { snap: AppSnapshot }) {
           <div className="savebar">
             <button
               className="btn primary"
-              onClick={async () => {
-                await api.copyText(reportText(entries))
-                setCopied(true)
-                setTimeout(() => setCopied(false), 1500)
-              }}
+              onClick={() => void copyReport()}
             >
               {copied ? 'Copied!' : 'Copy report'}
             </button>

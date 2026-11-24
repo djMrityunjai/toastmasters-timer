@@ -14,6 +14,8 @@ npm install
 npm run dev           # electron-vite dev (renderer hot-reloads; main/preload changes need a restart)
 npm test              # vitest: tests/timer.test.ts (timer engine + format helpers)
 npm run typecheck     # tsc --noEmit (TypeScript 7)
+npm run lint          # oxlint --type-aware --deny-warnings (must be clean: zero errors AND zero warnings)
+npm run lint:fix      # apply oxlint's automatic fixes
 npm run build         # electron-vite build → out/
 npm start             # run the built app (electron-vite preview)
 npm run install:mac   # build for host arch, replace /Applications/Toastmasters Timer.app, relaunch
@@ -22,7 +24,23 @@ npm run dist:win      # NSIS installer → dist/Toastmasters-Timer-Setup-<versio
 npm version patch --no-git-tag-version   # bump version before install/dist
 ```
 
-Before committing: `npm test && npm run typecheck`.
+## Before every commit (required)
+
+**Always run lint before committing, and don't commit unless all three pass:**
+
+```bash
+cd app && npm run lint && npm run typecheck && npm test
+```
+
+- Fix lint findings in the code. Don't weaken `.oxlintrc.json` to get a clean run. If a rule is wrong
+  for one line, use `// oxlint-disable-next-line <rule>` with a comment saying why.
+- Why oxlint, not ESLint: typescript-eslint only supports TypeScript < 6.1, and this project uses
+  TypeScript 7. `oxlint-tsgolint` provides the type-aware rules (built on TS 7).
+- Rules that matter here: `typescript/no-floating-promises` and `no-misused-promises`. Mark
+  fire-and-forget calls with `void`, e.g. `onClick={() => void api.timerStart()}`. React hook rules
+  are on too, including no `setState` directly inside `useEffect`.
+- Intentionally off: `no-underscore-dangle` (style) and `typescript/no-unsafe-type-assertion`
+  (obs-websocket returns loosely typed JSON, so the casts in `obs.ts` are deliberate).
 
 ## Architecture
 
@@ -62,6 +80,10 @@ from `renderer/src/util.ts` to strip the wrapper.
 - **Driving the UI without screen access:** `npx electron-vite dev --remoteDebuggingPort 9333`, then call
   `window.api.*` / `document` over the Chrome DevTools Protocol (`http://127.0.0.1:9333/json`).
   `window.api.obsDiagnostics()` shows the live OBS scene state.
+- Smoke tests in dev use the **real** user-data folder. Pressing Stop after more than 1s adds a Report entry,
+  so remove test entries from `history.json` afterwards.
+- IPC handlers in `main/index.ts` type renderer arguments as `unknown` and validate them, because input
+  from the renderer is untrusted.
 - Zoom/Meet mirror only the user's own preview. Background text looking reversed there is expected; don't "fix" it in OBS.
 - OBS must run on the same machine (it loads image files by local path).
 

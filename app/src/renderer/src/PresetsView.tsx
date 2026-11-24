@@ -101,7 +101,7 @@ export default function PresetsView({ snap, onSaved }: { snap: AppSnapshot; onSa
       </div>
 
       <div className="savebar">
-        <button className="btn primary" onClick={save}>
+        <button className="btn primary" onClick={() => void save()}>
           Save
         </button>
         {msg && <span className={msg.tone === 'ok' ? 'ok-text' : 'error-text'}>{msg.text}</span>}

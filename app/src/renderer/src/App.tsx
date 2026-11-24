@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import type { AppSnapshot } from '@shared/types'
 import { api } from './util'
 import TimerView from './TimerView'
@@ -15,10 +15,12 @@ export default function App() {
   const [snap, setSnap] = useState<AppSnapshot | null>(null)
   const [tab, setTab] = useState<Tab>('Timer')
 
-  const reload = () => api.getSnapshot().then(setSnap)
+  const reload = useCallback(() => {
+    void api.getSnapshot().then(setSnap)
+  }, [])
 
   useEffect(() => {
-    void reload()
+    reload()
     const offs = [
       api.onTimer((timer) => setSnap((s) => (s ? { ...s, timer } : s))),
       api.onObs((obs) => setSnap((s) => (s ? { ...s, obs } : s))),
@@ -26,7 +28,7 @@ export default function App() {
       api.onSets((sets, activeSetId) => setSnap((s) => (s ? { ...s, sets, settings: { ...s.settings, activeSetId } } : s)))
     ]
     return () => offs.forEach((off) => off())
-  }, [])
+  }, [reload])
 
   if (!snap) return null
 

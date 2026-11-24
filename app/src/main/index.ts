@@ -87,8 +87,9 @@ app.whenReady().then(() => {
   })
 
   // ---- IPC ----
-  const handle = (name: string, fn: (...args: any[]) => unknown): void => {
-    ipcMain.handle(`api:${name}`, (_e, ...args) => fn(...args))
+  // Handlers declare their own parameter types; IPC arguments arrive untyped from the renderer.
+  const handle = (name: string, fn: (...args: never[]) => unknown): void => {
+    ipcMain.handle(`api:${name}`, (_e, ...args: unknown[]) => fn(...(args as never[])))
   }
 
   handle('getSnapshot', (): AppSnapshot => ({
@@ -104,7 +105,7 @@ app.whenReady().then(() => {
   handle('timerPause', () => timer.pause())
   handle('timerStop', () => void timer.stop())
   handle('timerReset', () => timer.reset())
-  handle('setSpeaker', (name: string) => timer.setSpeaker(String(name).slice(0, 100)))
+  handle('setSpeaker', (name: unknown) => timer.setSpeaker(typeof name === 'string' ? name.slice(0, 100) : ''))
   handle('selectPreset', (id: string) => {
     store.update({ activePresetId: id })
     timer.setPreset(store.activePreset())
@@ -119,7 +120,7 @@ app.whenReady().then(() => {
     store.update({ presets, activePresetId })
     timer.setPreset(store.activePreset())
   })
-  handle('setGraceSeconds', (s: number) => store.update({ graceSeconds: Math.max(0, Math.round(Number(s) || 0)) }))
+  handle('setGraceSeconds', (s: unknown) => store.update({ graceSeconds: Math.max(0, Math.round(Number(s) || 0)) }))
   handle('setHotkeys', (h: Hotkeys) => {
     const error = registerHotkeys(h)
     if (error) {
@@ -178,7 +179,7 @@ app.whenReady().then(() => {
     broadcastSets()
   })
 
-  handle('obsSaveConnection', (host: string, port: number, password: string | null, autoConnect: boolean) => {
+  handle('obsSaveConnection', (host: string, port: unknown, password: string | null, autoConnect: boolean) => {
     store.update({ obs: { ...store.settings.obs, host: host.trim() || 'localhost', port: Number(port) || 4455, autoConnect } })
     if (password !== null) store.savePassword(password)
     configureObs()
@@ -193,9 +194,9 @@ app.whenReady().then(() => {
     store.clearHistory()
     send('history', store.history)
   })
-  handle('copyText', (text: string) => clipboard.writeText(String(text)))
-  handle('openExternal', (url: string) => {
-    if (/^https:\/\//.test(url)) return shell.openExternal(url)
+  handle('copyText', (text: unknown) => clipboard.writeText(typeof text === 'string' ? text : ''))
+  handle('openExternal', async (url: unknown) => {
+    if (typeof url === 'string' && /^https:\/\//.test(url)) await shell.openExternal(url)
   })
 
   createWindow()
@@ -206,6 +207,9 @@ app.whenReady().then(() => {
     globalShortcut.unregisterAll()
     timer.dispose()
   })
+}).catch((err: unknown) => {
+  dialog.showErrorBox('Toastmasters Timer could not start', err instanceof Error ? err.message : String(err))
+  app.quit()
 })
 
 function createWindow(): void {

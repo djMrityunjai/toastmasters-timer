@@ -65,11 +65,11 @@ export default function ObsView({ snap, onSaved }: { snap: AppSnapshot; onSaved:
         <input type="checkbox" checked={autoConnect} onChange={(e) => setAutoConnect(e.target.checked)} /> Connect automatically when the app starts
       </label>
       <div className="savebar">
-        <button className="btn primary" disabled={busy} onClick={saveAndConnect}>
+        <button className="btn primary" disabled={busy} onClick={() => void saveAndConnect()}>
           {obs.connected ? 'Save & reconnect' : 'Save & connect'}
         </button>
         {obs.connected && (
-          <button className="btn" disabled={busy} onClick={() => run(() => api.obsDisconnect())}>
+          <button className="btn" disabled={busy} onClick={() => void run(() => api.obsDisconnect())}>
             Disconnect
           </button>
         )}
@@ -99,7 +99,10 @@ export default function ObsView({ snap, onSaved }: { snap: AppSnapshot; onSaved:
           ) : (
             <>
               not installed —{' '}
-              <a href="#" onClick={(e) => (e.preventDefault(), api.openExternal(BG_REMOVAL_URL))}>
+              <a href="#" onClick={(e) => {
+                  e.preventDefault()
+                  void api.openExternal(BG_REMOVAL_URL)
+                }}>
                 download obs-backgroundremoval
               </a>
               , install it, restart OBS, then run setup again
@@ -108,7 +111,7 @@ export default function ObsView({ snap, onSaved }: { snap: AppSnapshot; onSaved:
         </li>
       </ul>
       <div className="savebar">
-        <button className="btn primary" disabled={busy || !obs.connected} onClick={setup}>
+        <button className="btn primary" disabled={busy || !obs.connected} onClick={() => void setup()}>
           {obs.sceneReady ? 'Re-run setup' : 'Set up OBS'}
         </button>
       </div>
@@ -122,7 +125,7 @@ export default function ObsView({ snap, onSaved }: { snap: AppSnapshot; onSaved:
 
       <h2>3. Send it to Zoom</h2>
       <div className="savebar">
-        <button className="btn primary" disabled={busy || !obs.connected} onClick={() => run(() => api.obsVirtualCam(!obs.virtualCamActive))}>
+        <button className="btn primary" disabled={busy || !obs.connected} onClick={() => void run(() => api.obsVirtualCam(!obs.virtualCamActive))}>
           {obs.virtualCamActive ? 'Stop virtual camera' : 'Start virtual camera'}
         </button>
         <span className={obs.virtualCamActive ? 'ok-text' : 'muted'}>{obs.virtualCamActive ? 'Virtual camera is on' : 'Virtual camera is off'}</span>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { formatClock, formatSeconds } from '@shared/format'
 import type { AppSnapshot } from '@shared/types'
 import { api, prettyHotkey } from './util'
@@ -11,9 +11,6 @@ export default function TimerView({ snap }: { snap: AppSnapshot }) {
   const running = timer.status === 'running'
   const active = running || timer.status === 'paused'
 
-  // Keep the local field in sync when the speaker is cleared elsewhere.
-  useEffect(() => setSpeaker(timer.speaker), [timer.speaker])
-
   const p = timer.preset
   return (
     <section className="timer-view">
@@ -21,7 +18,7 @@ export default function TimerView({ snap }: { snap: AppSnapshot }) {
         <label className="field grow">
           <span>Speech type</span>
           {/* The timer's preset is pushed live from the main process, so it's the source of truth here. */}
-          <select value={timer.preset.id} onChange={(e) => api.selectPreset(e.target.value)}>
+          <select value={timer.preset.id} onChange={(e) => void api.selectPreset(e.target.value)}>
             {settings.presets.map((preset) => (
               <option key={preset.id} value={preset.id}>
                 {preset.name} ({formatSeconds(preset.green)}–{formatSeconds(preset.red)})
@@ -54,18 +51,18 @@ export default function TimerView({ snap }: { snap: AppSnapshot }) {
 
       <div className="controls">
         {running ? (
-          <button className="btn big" onClick={() => api.timerPause()}>
+          <button className="btn big" onClick={() => void api.timerPause()}>
             Pause
           </button>
         ) : (
-          <button className="btn big primary" onClick={() => api.timerStart()}>
+          <button className="btn big primary" onClick={() => void api.timerStart()}>
             {timer.status === 'paused' ? 'Resume' : 'Start'}
           </button>
         )}
-        <button className="btn big danger" disabled={!active} onClick={() => api.timerStop()}>
+        <button className="btn big danger" disabled={!active} onClick={() => void api.timerStop()}>
           Stop
         </button>
-        <button className="btn big" disabled={timer.status === 'idle'} onClick={() => api.timerReset()}>
+        <button className="btn big" disabled={timer.status === 'idle'} onClick={() => void api.timerReset()}>
           Reset
         </button>
       </div>

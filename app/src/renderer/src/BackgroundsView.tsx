@@ -29,7 +29,7 @@ export default function BackgroundsView({ snap }: { snap: AppSnapshot }) {
         <button
           className="btn"
           onClick={() =>
-            run(async () => {
+            void run(async () => {
               await api.createSet(newName || 'My backgrounds')
               setNewName('')
             })
@@ -54,14 +54,14 @@ function SetCard({ set, active, run }: { set: BackgroundSet; active: boolean; ru
         {set.builtIn ? (
           <strong>{set.name}</strong>
         ) : (
-          <input className="set-name" defaultValue={set.name} onBlur={(e) => run(() => api.renameSet(set.id, e.target.value))} />
+          <input className="set-name" defaultValue={set.name} onBlur={(e) => void run(() => api.renameSet(set.id, e.target.value))} />
         )}
         {set.builtIn && <span className="tag">built-in</span>}
         <span className="spacer" />
         {active ? (
           <span className="tag ok">In use</span>
         ) : (
-          <button className="btn small primary" disabled={!complete} title={complete ? '' : 'Add all four images first'} onClick={() => run(() => api.setActiveSet(set.id))}>
+          <button className="btn small primary" disabled={!complete} title={complete ? '' : 'Add all four images first'} onClick={() => void run(() => api.setActiveSet(set.id))}>
             Use this set
           </button>
         )}
@@ -93,7 +93,7 @@ function Slot({ set, phase, run }: { set: BackgroundSet; phase: Phase; run: (fn:
     <button
       className={`slot slot-${phase}${over ? ' over' : ''}${editable ? '' : ' readonly'}`}
       disabled={!editable}
-      onClick={() => run(() => api.pickImageForSet(set.id, phase))}
+      onClick={() => void run(() => api.pickImageForSet(set.id, phase))}
       onDragOver={(e) => {
         if (!editable) return
         e.preventDefault()
