@@ -40,6 +40,19 @@ Runs on macOS and Windows (Electron + obs-websocket v5). The Windows installer b
   - Get the **Windows** build of obs-backgroundremoval (the `.exe`/`.zip` from the releases page) and restart OBS.
   - OBS Virtual Camera is built into OBS on Windows; nothing extra to install.
 
+### Updating on this Mac
+
+From `app/`, bump the version (optional), then build and install in one step:
+
+```bash
+npm version patch --no-git-tag-version
+npm run install:mac
+```
+
+This builds for your Mac, quits the running app, replaces `/Applications/Toastmasters Timer.app` and relaunches it.
+Settings, the OBS password, backgrounds and report history are kept. The version shows next to the app name.
+(Updating from a DMG works too: drag the new app into Applications and choose **Replace**.)
+
 Host: `localhost` or the IP OBS shows both work, as long as OBS runs on **this** computer
 (OBS loads the background images from local file paths).
 

@@ -48,6 +48,11 @@ main {
   width: 30px;
   height: 30px;
 }
+.brand-version {
+  font-size: 12px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
 .brand-name {
   font-size: 16px;
   font-weight: 700;

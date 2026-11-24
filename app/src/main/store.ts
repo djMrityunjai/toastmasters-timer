@@ -62,8 +62,10 @@ export class Store {
     if (!this.settings.presets?.length) this.settings.presets = DEFAULT_PRESETS
     // v0.1.0 defaults (⌘⇧S / ⌘⇧R) hijacked "Save As" system-wide; move untouched defaults to the new ones.
     const hk = this.settings.hotkeys
+    const legacy = hk.startStop === 'CommandOrControl+Shift+S' || hk.reset === 'CommandOrControl+Shift+R'
     if (hk.startStop === 'CommandOrControl+Shift+S') hk.startStop = DEFAULT_SETTINGS.hotkeys.startStop
     if (hk.reset === 'CommandOrControl+Shift+R') hk.reset = DEFAULT_SETTINGS.hotkeys.reset
+    if (legacy) writeJson(this.settingsFile, this.settings)
     this.settings.obs.hasPassword = existsSync(this.passwordFile)
     this.history = readJson<HistoryEntry[]>(this.historyFile, [])
   }

@@ -92,6 +92,7 @@ app.whenReady().then(() => {
   }
 
   handle('getSnapshot', (): AppSnapshot => ({
+    version: app.getVersion(),
     settings: store.settings,
     sets: library.list(),
     timer: timer.state,

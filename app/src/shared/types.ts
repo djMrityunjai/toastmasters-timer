@@ -81,6 +81,7 @@ export interface SetupResult {
 }
 
 export interface AppSnapshot {
+  version: string
   settings: Settings
   sets: BackgroundSet[]
   timer: TimerState

@@ -46,6 +46,7 @@ export default function App() {
       <header className="brand">
         <img src={logo} alt="" className="brand-logo" />
         <span className="brand-name">Toastmasters Timer</span>
+        <span className="brand-version">v{snap.version}</span>
         <button className={`obs-pill ${obsTone}`} onClick={() => setTab('OBS')} title="OBS connection">
           <span className="dot" />
           {obsLabel}

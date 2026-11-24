@@ -1,7 +1,7 @@
 {
   "name": "toastmasters-timer",
   "productName": "Toastmasters Timer",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Toastmasters timer that switches your OBS background green/yellow/red for Zoom",
   "main": "./out/main/index.js",
   "private": true,
@@ -12,7 +12,8 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "dist:mac": "electron-vite build && electron-builder --mac",
-    "dist:win": "electron-vite build && electron-builder --win"
+    "dist:win": "electron-vite build && electron-builder --win",
+    "install:mac": "bash scripts/install-mac.sh"
   },
   "dependencies": {
     "obs-websocket-js": "^5.0.8"
