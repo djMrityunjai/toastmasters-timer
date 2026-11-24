@@ -87,7 +87,7 @@ export default function PresetsView({ snap, onSaved }: { snap: AppSnapshot; onSa
 
       <h2>Keyboard shortcuts</h2>
       <p className="hint">
-        Global: they work while Zoom is in front. Use Electron accelerator format, e.g. <code>CommandOrControl+Shift+S</code>.
+        Global: they work while Zoom is in front. Use Electron accelerator format, e.g. <code>CommandOrControl+Alt+Shift+S</code>.
       </p>
       <div className="row">
         <label className="field grow">

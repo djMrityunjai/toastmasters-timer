@@ -19,7 +19,7 @@ export const DEFAULT_SETTINGS: Settings = {
   activeSetId: 'builtin-logo',
   graceSeconds: 30,
   obs: { host: 'localhost', port: 4455, hasPassword: false, autoConnect: true },
-  hotkeys: { startStop: 'CommandOrControl+Shift+S', reset: 'CommandOrControl+Shift+R' }
+  hotkeys: { startStop: 'CommandOrControl+Alt+Shift+S', reset: 'CommandOrControl+Alt+Shift+R' }
 }
 
 function dataDir(): string {
@@ -60,6 +60,10 @@ export class Store {
       hotkeys: { ...DEFAULT_SETTINGS.hotkeys, ...saved.hotkeys }
     }
     if (!this.settings.presets?.length) this.settings.presets = DEFAULT_PRESETS
+    // v0.1.0 defaults (⌘⇧S / ⌘⇧R) hijacked "Save As" system-wide; move untouched defaults to the new ones.
+    const hk = this.settings.hotkeys
+    if (hk.startStop === 'CommandOrControl+Shift+S') hk.startStop = DEFAULT_SETTINGS.hotkeys.startStop
+    if (hk.reset === 'CommandOrControl+Shift+R') hk.reset = DEFAULT_SETTINGS.hotkeys.reset
     this.settings.obs.hasPassword = existsSync(this.passwordFile)
     this.history = readJson<HistoryEntry[]>(this.historyFile, [])
   }

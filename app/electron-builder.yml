@@ -25,6 +25,13 @@ win:
 nsis:
   oneClick: false
   allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: Toastmasters Timer
+  artifactName: Toastmasters-Timer-Setup-${version}.${ext}
 dmg:
   title: Toastmasters Timer
   artifactName: Toastmasters-Timer-${version}-${arch}.dmg
+toolsets:
+  # 3.12 bundle ships a native Apple Silicon makensis (the legacy 3.0.4.1 one is Intel-only)
+  nsis: "1.2.1"
