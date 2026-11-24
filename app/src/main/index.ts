@@ -8,6 +8,7 @@ import { ObsController } from './obs'
 import { Store } from './store'
 import { isWithinLimits, TimerEngine, validatePreset } from './timer'
 
+app.setName('Toastmasters Timer')
 protocol.registerSchemesAsPrivileged([{ scheme: 'tmbg', privileges: { standard: true, secure: true, supportFetchAPI: true } }])
 
 let win: BrowserWindow | null = null
@@ -20,7 +21,13 @@ function defaultSetsDir(): string {
   return app.isPackaged ? join(process.resourcesPath, 'default-sets') : join(app.getAppPath(), 'resources', 'default-sets')
 }
 
+function iconPath(): string {
+  return app.isPackaged ? join(process.resourcesPath, 'icon.png') : join(app.getAppPath(), 'build', 'icon.png')
+}
+
 app.whenReady().then(() => {
+  // Packaged builds get their Dock icon from the .icns; in dev, set it so you see the real icon.
+  if (!app.isPackaged && process.platform === 'darwin') app.dock?.setIcon(iconPath())
   const store = new Store()
   const library = new BackgroundLibrary(app.getPath('userData'), defaultSetsDir())
   if (!library.get(store.settings.activeSetId)) store.update({ activeSetId: 'builtin-logo' })
@@ -208,6 +215,7 @@ function createWindow(): void {
     minHeight: 560,
     title: 'Toastmasters Timer',
     backgroundColor: '#14161a',
+    icon: iconPath(), // used on Windows/Linux; macOS uses the bundle icon
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       contextIsolation: true,

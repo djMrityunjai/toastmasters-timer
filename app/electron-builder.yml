@@ -9,15 +9,22 @@ files:
 extraResources:
   - from: resources/default-sets
     to: default-sets
+  - from: build/icon.png
+    to: icon.png
 mac:
+  icon: build/icon.png
   category: public.app-category.productivity
   target:
     - target: dmg
       arch: [arm64, x64]
 win:
+  icon: build/icon.png
   target:
     - target: nsis
       arch: [x64]
 nsis:
   oneClick: false
   allowToChangeInstallationDirectory: true
+dmg:
+  title: Toastmasters Timer
+  artifactName: Toastmasters-Timer-${version}-${arch}.dmg
